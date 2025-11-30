@@ -1,11 +1,34 @@
-<div align="center">
+# Astra HCM (Human Capital Management) System
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+## Project Description
+Astra HCM is a modern, AI-driven human capital management platform designed for enterprise users. It follows a "No-Code + AI" philosophy, providing a clean, lightweight interface for managing the entire employee lifecycle.
 
-  <h1>Built with AI Studio</h2>
+Key features include:
+- **Dashboard**: Executive overview with real-time metrics.
+- **Organization**: Employee directory with list and grid views.
+- **Recruitment**: Trello-style Kanban board for candidate tracking.
+- **Analytics**: Data visualization using Recharts.
+- **Smart Builder**: aPaaS module for custom apps.
+- **Astra AI**: A persistent digital assistant for natural language interaction.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Tech Stack
+- **Framework**: React 18+
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Charts**: Recharts
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## Project Structure
+- `index.html`: Entry point, loads Tailwind via CDN.
+- `App.tsx`: Main layout controller and state-based router.
+- `types.ts`: Global type definitions.
+- `constants.tsx`: Mock data for development.
+- `components/`: Reusable UI components (Sidebar, TopBar, AIAssistant).
+- `pages/`: Individual module views (Dashboard, OrgManagement, Recruitment, etc.).
 
-</div>
+## Core Functionality Implemented
+1.  **Sidebar Navigation**: Collapsible, responsive sidebar.
+2.  **Dashboard**: Interactive widgets for Headcount, Turnover, and Tasks.
+3.  **Org Management**: Switchable view (Grid/List) for employee data.
+4.  **Recruitment**: Visual Kanban pipeline.
+5.  **AI Assistant**: Floating chat widget simulating AI interactions.
