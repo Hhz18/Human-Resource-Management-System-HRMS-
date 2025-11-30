@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users, TrendingDown, Clock, AlertCircle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area 
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area 
 } from 'recharts';
 import { TURNOVER_DATA } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';

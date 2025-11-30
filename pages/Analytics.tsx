@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, PieChart, Pie, Cell 
 } from 'recharts';
 import { HEADCOUNT_DATA, TURNOVER_DATA } from '../constants';
@@ -41,7 +41,7 @@ export const Analytics: React.FC = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {HEADCOUNT_DATA.map((entry, index) => (
+                  {HEADCOUNT_DATA.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

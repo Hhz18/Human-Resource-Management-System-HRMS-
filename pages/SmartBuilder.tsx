@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, Plus, FileText, Settings, Database } from 'lucide-react';
+import { Plus, FileText, Settings, Database } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const SmartBuilder: React.FC = () => {
