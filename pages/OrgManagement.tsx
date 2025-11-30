@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { LayoutList, LayoutGrid, Filter, Plus, MoreHorizontal } from 'lucide-react';
 import { MOCK_EMPLOYEES } from '../constants';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const OrgManagement: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Organization</h1>
-          <p className="text-slate-500">Manage employees, departments, and hierarchy.</p>
+          <h1 className="text-2xl font-bold text-slate-800">{t.org.title}</h1>
+          <p className="text-slate-500">{t.org.subtitle}</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="bg-white p-1 rounded-lg border border-slate-200 flex">
@@ -30,11 +32,11 @@ export const OrgManagement: React.FC = () => {
           </div>
           <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">
             <Filter size={18} />
-            <span className="text-sm font-medium">Filter</span>
+            <span className="text-sm font-medium">{t.org.filter}</span>
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm shadow-indigo-200">
             <Plus size={18} />
-            <span className="text-sm font-medium">Add Employee</span>
+            <span className="text-sm font-medium">{t.org.add}</span>
           </button>
         </div>
       </div>
@@ -65,7 +67,7 @@ export const OrgManagement: React.FC = () => {
           {/* Add New Card Placeholder */}
           <button className="border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-6 text-slate-400 hover:border-indigo-400 hover:text-indigo-500 transition-colors h-full min-h-[250px]">
             <Plus size={32} className="mb-2" />
-            <span className="font-medium">Hire New Employee</span>
+            <span className="font-medium">{t.org.hire}</span>
           </button>
         </div>
       ) : (

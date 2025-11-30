@@ -13,6 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { ViewState } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SidebarProps {
   currentView: ViewState;
@@ -22,17 +23,18 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, collapsed, toggleCollapse }) => {
+  const { t } = useLanguage();
   
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'org', label: 'Organization', icon: Users },
-    { id: 'attendance', label: 'Attendance', icon: CalendarClock },
-    { id: 'payroll', label: 'Payroll', icon: Banknote },
-    { id: 'recruitment', label: 'Recruitment', icon: UserPlus },
-    { id: 'performance', label: 'Performance', icon: TrendingUp },
-    { id: 'analytics', label: 'Smart Analytics', icon: BarChart3 },
-    { id: 'apaas', label: 'Smart Builder', icon: LayoutGrid },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'dashboard', label: t.sidebar.dashboard, icon: LayoutDashboard },
+    { id: 'org', label: t.sidebar.org, icon: Users },
+    { id: 'attendance', label: t.sidebar.attendance, icon: CalendarClock },
+    { id: 'payroll', label: t.sidebar.payroll, icon: Banknote },
+    { id: 'recruitment', label: t.sidebar.recruitment, icon: UserPlus },
+    { id: 'performance', label: t.sidebar.performance, icon: TrendingUp },
+    { id: 'analytics', label: t.sidebar.analytics, icon: BarChart3 },
+    { id: 'apaas', label: t.sidebar.apaas, icon: LayoutGrid },
+    { id: 'settings', label: t.sidebar.settings, icon: Settings },
   ];
 
   return (

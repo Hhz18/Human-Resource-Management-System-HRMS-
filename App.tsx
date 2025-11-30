@@ -6,6 +6,7 @@ import { OrgManagement } from './pages/OrgManagement';
 import { Recruitment } from './pages/Recruitment';
 import { Analytics } from './pages/Analytics';
 import { SmartBuilder } from './pages/SmartBuilder';
+import { Settings } from './pages/Settings';
 import { AIAssistant } from './components/AIAssistant';
 import { ViewState } from './types';
 import { Construction } from 'lucide-react';
@@ -32,7 +33,7 @@ const App: React.FC = () => {
       case 'attendance': return <PlaceholderPage title="Time & Attendance" />;
       case 'payroll': return <PlaceholderPage title="Payroll Management" />;
       case 'performance': return <PlaceholderPage title="Performance" />;
-      case 'settings': return <PlaceholderPage title="System Settings" />;
+      case 'settings': return <Settings />;
       default: return <Dashboard />;
     }
   };

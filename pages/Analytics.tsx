@@ -4,19 +4,22 @@ import {
   LineChart, Line, PieChart, Pie, Cell 
 } from 'recharts';
 import { HEADCOUNT_DATA, TURNOVER_DATA } from '../constants';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#f59e0b', '#10b981'];
 
 export const Analytics: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-6">
        <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Smart Analytics</h1>
-          <p className="text-slate-500">Data-driven insights for workforce planning.</p>
+          <h1 className="text-2xl font-bold text-slate-800">{t.analytics.title}</h1>
+          <p className="text-slate-500">{t.analytics.subtitle}</p>
         </div>
         <button className="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-medium shadow-sm">
-            Export Report
+            {t.analytics.export}
         </button>
       </div>
 
@@ -24,7 +27,7 @@ export const Analytics: React.FC = () => {
         
         {/* Headcount by Dept */}
         <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-          <h3 className="font-semibold text-slate-800 mb-6">Headcount Distribution</h3>
+          <h3 className="font-semibold text-slate-800 mb-6">{t.analytics.dist}</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -58,7 +61,7 @@ export const Analytics: React.FC = () => {
 
         {/* Recruitment Funnel - Using Bar Chart horizontal */}
         <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-          <h3 className="font-semibold text-slate-800 mb-6">Retention Rate (Last 6 Months)</h3>
+          <h3 className="font-semibold text-slate-800 mb-6">{t.analytics.retention}</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={TURNOVER_DATA}>
@@ -80,8 +83,8 @@ export const Analytics: React.FC = () => {
             <span className="text-xl">✨</span>
          </div>
          <div>
-            <h4 className="font-bold text-blue-900 text-sm">AI Insight</h4>
-            <p className="text-blue-800 text-sm mt-1">Based on current trends, the <strong>Sales Department</strong> is at risk of under-staffing next quarter. Consider opening 2 new reqs for Account Executives.</p>
+            <h4 className="font-bold text-blue-900 text-sm">{t.analytics.insight}</h4>
+            <p className="text-blue-800 text-sm mt-1">{t.analytics.insightText}</p>
          </div>
       </div>
     </div>

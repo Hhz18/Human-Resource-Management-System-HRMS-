@@ -2,29 +2,32 @@ import React from 'react';
 import { MOCK_CANDIDATES } from '../constants';
 import { MoreHorizontal, MessageSquare, Star, Paperclip, Plus } from 'lucide-react';
 import { Candidate } from '../types';
-
-const columns = [
-  { id: 'New', label: 'New Applied', color: 'border-blue-500' },
-  { id: 'Screening', label: 'Screening', color: 'border-purple-500' },
-  { id: 'Interview', label: 'Interview', color: 'border-orange-500' },
-  { id: 'Offer', label: 'Offer Sent', color: 'border-green-500' },
-];
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const Recruitment: React.FC = () => {
+  const { t } = useLanguage();
+
+  const columns = [
+    { id: 'New', label: t.recruitment.cols.new, color: 'border-blue-500' },
+    { id: 'Screening', label: t.recruitment.cols.screening, color: 'border-purple-500' },
+    { id: 'Interview', label: t.recruitment.cols.interview, color: 'border-orange-500' },
+    { id: 'Offer', label: t.recruitment.cols.offer, color: 'border-green-500' },
+  ];
+
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Recruitment Pipeline</h1>
-          <p className="text-slate-500">Track candidates from application to offer.</p>
+          <h1 className="text-2xl font-bold text-slate-800">{t.recruitment.title}</h1>
+          <p className="text-slate-500">{t.recruitment.subtitle}</p>
         </div>
         <div className="flex gap-3">
              <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">
-            <span className="text-sm font-medium">Job: Sr. Designer</span>
+            <span className="text-sm font-medium">{t.recruitment.job}</span>
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm shadow-indigo-200">
             <Plus size={18} />
-            <span className="text-sm font-medium">Add Candidate</span>
+            <span className="text-sm font-medium">{t.recruitment.add}</span>
           </button>
         </div>
       </div>

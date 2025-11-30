@@ -4,28 +4,31 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area 
 } from 'recharts';
 import { TURNOVER_DATA } from '../constants';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const Dashboard: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Executive Overview</h1>
-          <p className="text-slate-500">Welcome back, Eleanor. Here's what's happening today.</p>
+          <h1 className="text-2xl font-bold text-slate-800">{t.dashboard.title}</h1>
+          <p className="text-slate-500">{t.dashboard.welcome}</p>
         </div>
         <div className="text-sm text-slate-400">
-          Last updated: Just now
+          {t.dashboard.updated}
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Headcount', value: '1,284', trend: '+12%', trendUp: true, icon: Users, color: 'bg-blue-500' },
-          { label: 'Avg. Turnover', value: '1.2%', trend: '-0.5%', trendUp: false, icon: TrendingDown, color: 'bg-green-500' }, // trendUp false means good for turnover
-          { label: 'Open Positions', value: '42', trend: '+5', trendUp: true, icon: Clock, color: 'bg-purple-500' },
-          { label: 'Pending Approvals', value: '18', trend: 'Urgent', trendUp: true, icon: AlertCircle, color: 'bg-amber-500' },
+          { label: t.dashboard.stats.headcount, value: '1,284', trend: '+12%', trendUp: true, icon: Users, color: 'bg-blue-500' },
+          { label: t.dashboard.stats.turnover, value: '1.2%', trend: '-0.5%', trendUp: false, icon: TrendingDown, color: 'bg-green-500' },
+          { label: t.dashboard.stats.positions, value: '42', trend: '+5', trendUp: true, icon: Clock, color: 'bg-purple-500' },
+          { label: t.dashboard.stats.approvals, value: '18', trend: 'Urgent', trendUp: true, icon: AlertCircle, color: 'bg-amber-500' },
         ].map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start">
@@ -33,7 +36,7 @@ export const Dashboard: React.FC = () => {
                 <stat.icon size={24} className={stat.color.replace('bg-', 'text-')} />
               </div>
               <div className={`flex items-center text-xs font-medium px-2 py-1 rounded-full ${
-                  (stat.trendUp && stat.label !== 'Avg. Turnover') || (!stat.trendUp && stat.label === 'Avg. Turnover') 
+                  (stat.trendUp && stat.label !== t.dashboard.stats.turnover) || (!stat.trendUp && stat.label === t.dashboard.stats.turnover) 
                   ? 'bg-green-100 text-green-700' 
                   : 'bg-red-100 text-red-700'
                 }`}>
@@ -56,8 +59,8 @@ export const Dashboard: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-semibold text-slate-800">Turnover Trends (6 Months)</h3>
-              <button className="text-sm text-indigo-600 font-medium">View Report</button>
+              <h3 className="font-semibold text-slate-800">{t.dashboard.charts.turnover}</h3>
+              <button className="text-sm text-indigo-600 font-medium">{t.dashboard.charts.viewReport}</button>
             </div>
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -84,7 +87,7 @@ export const Dashboard: React.FC = () => {
         {/* Right Col: Quick Actions & Tasks */}
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-            <h3 className="font-semibold text-slate-800 mb-4">Pending Tasks</h3>
+            <h3 className="font-semibold text-slate-800 mb-4">{t.dashboard.tasks.title}</h3>
             <div className="space-y-4">
               {[
                 { title: 'Approve Payroll (March)', due: 'Today', type: 'Finance' },
@@ -101,7 +104,7 @@ export const Dashboard: React.FC = () => {
               ))}
             </div>
             <button className="w-full mt-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-              View All Tasks
+              {t.dashboard.tasks.viewAll}
             </button>
           </div>
 
@@ -109,10 +112,10 @@ export const Dashboard: React.FC = () => {
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <Users size={120} />
             </div>
-            <h3 className="text-lg font-bold mb-2">Talent Review 2024</h3>
-            <p className="text-indigo-200 text-sm mb-4">The quarterly performance cycle is starting. Initiate the 360 review process now.</p>
+            <h3 className="text-lg font-bold mb-2">{t.dashboard.promo.title}</h3>
+            <p className="text-indigo-200 text-sm mb-4">{t.dashboard.promo.desc}</p>
             <button className="bg-white text-indigo-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-50 transition-colors">
-              Start Cycle
+              {t.dashboard.promo.btn}
             </button>
           </div>
         </div>

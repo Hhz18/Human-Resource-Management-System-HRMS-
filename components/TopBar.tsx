@@ -1,7 +1,10 @@
 import React from 'react';
 import { Search, Bell, HelpCircle } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const TopBar: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-20">
       {/* Search */}
@@ -10,7 +13,7 @@ export const TopBar: React.FC = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
             type="text"
-            placeholder="Ask Astra AI or search for employees..."
+            placeholder={t.topbar.search}
             className="w-full bg-slate-50 border border-slate-200 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
           />
         </div>
@@ -36,7 +39,7 @@ export const TopBar: React.FC = () => {
           />
           <div className="text-left hidden md:block">
             <p className="text-sm font-semibold text-slate-700">Eleanor Pena</p>
-            <p className="text-xs text-slate-500">HR Director</p>
+            <p className="text-xs text-slate-500">{t.topbar.role}</p>
           </div>
         </button>
       </div>

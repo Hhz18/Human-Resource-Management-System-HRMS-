@@ -1,7 +1,10 @@
 import React from 'react';
 import { LayoutGrid, Plus, FileText, Settings, Database } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const SmartBuilder: React.FC = () => {
+    const { t } = useLanguage();
+
     const apps = [
         { name: 'Store Performance', type: 'Form', users: 120, icon: FileText, color: 'bg-orange-500' },
         { name: 'Travel Expenses', type: 'Workflow', users: 450, icon: Settings, color: 'bg-blue-500' },
@@ -12,12 +15,12 @@ export const SmartBuilder: React.FC = () => {
         <div className="space-y-6">
              <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Smart Builder (aPaaS)</h1>
-                    <p className="text-slate-500">Build custom apps and workflows without code.</p>
+                    <h1 className="text-2xl font-bold text-slate-800">{t.apaas.title}</h1>
+                    <p className="text-slate-500">{t.apaas.subtitle}</p>
                 </div>
                 <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm shadow-indigo-200">
                     <Plus size={18} />
-                    <span className="text-sm font-medium">Create App</span>
+                    <span className="text-sm font-medium">{t.apaas.create}</span>
                 </button>
             </div>
 
@@ -27,8 +30,8 @@ export const SmartBuilder: React.FC = () => {
                     <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center mb-4">
                         <Plus size={24} />
                     </div>
-                    <h3 className="font-semibold text-lg">Blank Application</h3>
-                    <p className="text-sm">Start from scratch</p>
+                    <h3 className="font-semibold text-lg">{t.apaas.blank}</h3>
+                    <p className="text-sm">{t.apaas.start}</p>
                 </div>
 
                 {/* Existing Apps */}
