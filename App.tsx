@@ -6,18 +6,13 @@ import { OrgManagement } from './pages/OrgManagement';
 import { Recruitment } from './pages/Recruitment';
 import { Analytics } from './pages/Analytics';
 import { SmartBuilder } from './pages/SmartBuilder';
+import { Attendance } from './pages/Attendance';
+import { Payroll } from './pages/Payroll';
+import { Performance } from './pages/Performance';
 import { Settings } from './pages/Settings';
+import { Efficiency } from './pages/Efficiency';
 import { AIAssistant } from './components/AIAssistant';
 import { ViewState } from './types';
-import { Construction } from 'lucide-react';
-
-const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
-  <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12">
-    <Construction size={64} className="mb-4 opacity-20" />
-    <h2 className="text-2xl font-bold text-slate-300">{title} Module</h2>
-    <p className="mt-2">This module is under development for the demo.</p>
-  </div>
-);
 
 const App: React.FC = () => {
   const [currentView, setView] = useState<ViewState>('dashboard');
@@ -29,10 +24,11 @@ const App: React.FC = () => {
       case 'org': return <OrgManagement />;
       case 'recruitment': return <Recruitment />;
       case 'analytics': return <Analytics />;
+      case 'efficiency': return <Efficiency />;
       case 'apaas': return <SmartBuilder />;
-      case 'attendance': return <PlaceholderPage title="Time & Attendance" />;
-      case 'payroll': return <PlaceholderPage title="Payroll Management" />;
-      case 'performance': return <PlaceholderPage title="Performance" />;
+      case 'attendance': return <Attendance />;
+      case 'payroll': return <Payroll />;
+      case 'performance': return <Performance />;
       case 'settings': return <Settings />;
       default: return <Dashboard />;
     }

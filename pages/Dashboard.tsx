@@ -56,13 +56,13 @@ export const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Left Col: Analytics */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 min-w-0">
           <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-semibold text-slate-800">{t.dashboard.charts.turnover}</h3>
               <button className="text-sm text-indigo-600 font-medium">{t.dashboard.charts.viewReport}</button>
             </div>
-            <div className="h-72 w-full">
+            <div className="h-72 w-full min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={TURNOVER_DATA}>
                   <defs>

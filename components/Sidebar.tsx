@@ -10,7 +10,8 @@ import {
   BarChart3, 
   LayoutGrid, 
   Settings,
-  ChevronRight
+  ChevronRight,
+  Gauge
 } from 'lucide-react';
 import { ViewState } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -32,13 +33,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, collapse
     { id: 'payroll', label: t.sidebar.payroll, icon: Banknote },
     { id: 'recruitment', label: t.sidebar.recruitment, icon: UserPlus },
     { id: 'performance', label: t.sidebar.performance, icon: TrendingUp },
+    { id: 'efficiency', label: t.sidebar.efficiency, icon: Gauge },
     { id: 'analytics', label: t.sidebar.analytics, icon: BarChart3 },
     { id: 'apaas', label: t.sidebar.apaas, icon: LayoutGrid },
     { id: 'settings', label: t.sidebar.settings, icon: Settings },
   ];
 
   return (
-    <div className={`h-screen bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out flex flex-col ${collapsed ? 'w-20' : 'w-64'} border-r border-slate-800`}>
+    <div className={`h-screen bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out flex flex-col shrink-0 ${collapsed ? 'w-20' : 'w-64'} border-r border-slate-800`}>
       {/* Brand */}
       <div className="h-16 flex items-center justify-center border-b border-slate-800">
         <div className="flex items-center gap-3 font-bold text-white text-xl">
