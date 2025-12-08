@@ -270,10 +270,13 @@ const TileNode: React.FC<{ node: DepartmentNode, showLegal: boolean }> = ({ node
 const StructureView = () => {
     const { t } = useLanguage();
     const [viewLayout, setViewLayout] = useState<'tree' | 'tile'>('tree');
-    const [structureType, setStructureType] = useState<'admin' | 'project'>('admin');
+    const [structureType, setStructureType] = useState<'admin' | 'project' | 'matrix'>('admin');
     const [showLegal, setShowLegal] = useState(false);
 
-    const data = structureType === 'admin' ? MOCK_ORG_TREE : MOCK_PROJECT_ORG_TREE;
+    // Map different views to data sources
+    const data = structureType === 'admin' ? MOCK_ORG_TREE : 
+                 structureType === 'project' ? MOCK_PROJECT_ORG_TREE :
+                 MOCK_ORG_TREE; // Fallback for Matrix, in real app this would be a matrix structure
 
     // Helper to flatten tree for tile view
     const getAllNodes = (nodes: DepartmentNode[]): DepartmentNode[] => {
@@ -320,7 +323,7 @@ const StructureView = () => {
                     >
                         <option value="admin">{t.org.structure.typeAdmin}</option>
                         <option value="project">{t.org.structure.typeProject}</option>
-                        {/* <option value="matrix">{t.org.structure.typeMatrix}</option> */}
+                        <option value="matrix">{t.org.structure.typeMatrix}</option>
                     </select>
 
                     <button 
