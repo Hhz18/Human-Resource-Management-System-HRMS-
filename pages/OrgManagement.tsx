@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { 
   LayoutList, LayoutGrid, Filter, Plus, MoreHorizontal, X, Save, 
   Users, GitBranch, GitPullRequest, FileText, Shield, Search, 
-  ChevronRight, ChevronDown, Clock, AlertCircle, CheckCircle, Upload, PenTool
+  ChevronRight, ChevronDown, Clock, AlertCircle, CheckCircle, Upload, PenTool,
+  FileDown, RefreshCw, XCircle, Eye, Camera, Move, Building, Share2, Mail, MapPin, Calendar, Smartphone
 } from 'lucide-react';
-import { MOCK_EMPLOYEES, MOCK_ORG_TREE, MOCK_HR_PROCESSES, MOCK_CONTRACTS, MOCK_ROLES } from '../constants';
+import { MOCK_EMPLOYEES, MOCK_ORG_TREE, MOCK_PROJECT_ORG_TREE, MOCK_HR_PROCESSES, MOCK_CONTRACTS, MOCK_ROLES } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Employee, DepartmentNode, HRProcess, Contract, RolePermission } from '../types';
 
@@ -176,13 +177,35 @@ const DirectoryView = () => {
     );
 };
 
-// ... existing code for other components ...
-const OrgNode: React.FC<{ node: DepartmentNode }> = ({ node }) => {
+// --- Structure View Components ---
+
+const OrgNode: React.FC<{ node: DepartmentNode, showLegal: boolean }> = ({ node, showLegal }) => {
+    const { t } = useLanguage();
     return (
         <div className="flex flex-col items-center">
-            <div className="bg-white border border-slate-200 shadow-sm rounded-lg p-3 w-48 text-center relative z-10 hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer">
+            <div className={`bg-white border shadow-sm rounded-lg p-3 w-56 text-center relative z-10 hover:shadow-md transition-all cursor-pointer group
+                ${showLegal && node.isLegalEntity ? 'border-amber-400 ring-2 ring-amber-100' : 'border-slate-200 hover:border-indigo-300'}
+            `}>
+                {/* Legal Entity Badge */}
+                {showLegal && node.isLegalEntity && (
+                    <div className="absolute -top-2 -right-2 bg-amber-100 text-amber-700 p-1 rounded-full border border-amber-200" title={t.org.structure.legalEntity}>
+                        <Building size={12} />
+                    </div>
+                )}
+
                 <div className="font-bold text-slate-800 text-sm truncate">{node.name}</div>
-                <div className="text-xs text-indigo-600 mb-2">{node.manager}</div>
+                {node.entityCode && showLegal && <div className="text-[10px] text-amber-600 font-mono mb-1">{node.entityCode}</div>}
+                
+                <div className="text-xs text-indigo-600 mb-1">{node.manager}</div>
+                
+                {/* Dotted Line / Secondary Manager */}
+                {node.secondaryManager && (
+                    <div className="flex items-center justify-center gap-1 text-[10px] text-slate-400 mb-2 border-t border-dashed border-slate-200 pt-1 mt-1">
+                        <Share2 size={10} /> 
+                        <span className="truncate max-w-[120px]">{node.secondaryManager}</span>
+                    </div>
+                )}
+
                 <div className="text-[10px] text-slate-400 bg-slate-50 rounded-full px-2 py-0.5 inline-block">
                     {node.headcount} Members
                 </div>
@@ -193,11 +216,11 @@ const OrgNode: React.FC<{ node: DepartmentNode }> = ({ node }) => {
             {node.children && node.children.length > 0 && (
                 <div className="relative pt-8 flex gap-8">
                      {/* Horizontal Line Connector */}
-                     <div className="absolute top-4 left-0 right-0 h-px bg-slate-300 mx-24"></div>
+                     <div className="absolute top-4 left-0 right-0 h-px bg-slate-300 mx-10"></div>
                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-4 bg-slate-300"></div>
                      
                     {node.children.map(child => (
-                        <OrgNode key={child.id} node={child} />
+                        <OrgNode key={child.id} node={child} showLegal={showLegal} />
                     ))}
                 </div>
             )}
@@ -205,19 +228,133 @@ const OrgNode: React.FC<{ node: DepartmentNode }> = ({ node }) => {
     );
 };
 
-const StructureView = () => {
+const TileNode: React.FC<{ node: DepartmentNode, showLegal: boolean }> = ({ node, showLegal }) => {
     return (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 min-h-[600px] relative overflow-hidden">
-            <div className="absolute top-4 right-4 flex gap-2">
-                 <button className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">Snapshot</button>
-                 <select className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 bg-white">
-                     <option>View: Administrative</option>
-                     <option>View: Project Based</option>
-                 </select>
+        <div className={`bg-white p-4 rounded-xl border shadow-sm hover:shadow-md transition-all flex flex-col gap-2 relative
+            ${showLegal && node.isLegalEntity ? 'border-amber-400 bg-amber-50/10' : 'border-slate-200'}
+        `}>
+             {showLegal && node.isLegalEntity && (
+                <div className="absolute top-3 right-3 text-amber-500">
+                    <Building size={16} />
+                </div>
+            )}
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 font-bold text-lg">
+                    {node.name.charAt(0)}
+                </div>
+                <div>
+                    <h4 className="font-bold text-slate-800 text-sm line-clamp-1">{node.name}</h4>
+                    <p className="text-xs text-slate-500">{node.type}</p>
+                </div>
+            </div>
+            <div className="mt-2 space-y-1">
+                <div className="flex justify-between text-xs">
+                    <span className="text-slate-500">Manager:</span>
+                    <span className="text-slate-700 font-medium">{node.manager}</span>
+                </div>
+                {node.secondaryManager && (
+                    <div className="flex justify-between text-xs text-slate-400">
+                        <span className="flex items-center gap-1"><Share2 size={10}/> Matrix:</span>
+                        <span className="truncate max-w-[100px]">{node.secondaryManager}</span>
+                    </div>
+                )}
+                <div className="flex justify-between text-xs">
+                    <span className="text-slate-500">Headcount:</span>
+                    <span className="bg-slate-100 px-1.5 rounded text-slate-600">{node.headcount}</span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const StructureView = () => {
+    const { t } = useLanguage();
+    const [viewLayout, setViewLayout] = useState<'tree' | 'tile'>('tree');
+    const [structureType, setStructureType] = useState<'admin' | 'project'>('admin');
+    const [showLegal, setShowLegal] = useState(false);
+
+    const data = structureType === 'admin' ? MOCK_ORG_TREE : MOCK_PROJECT_ORG_TREE;
+
+    // Helper to flatten tree for tile view
+    const getAllNodes = (nodes: DepartmentNode[]): DepartmentNode[] => {
+        let all: DepartmentNode[] = [];
+        nodes.forEach(node => {
+            all.push(node);
+            if (node.children) {
+                all = all.concat(getAllNodes(node.children));
+            }
+        });
+        return all;
+    };
+
+    const flatNodes = getAllNodes(data);
+
+    return (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 min-h-[600px] flex flex-col relative overflow-hidden">
+            {/* Toolbar */}
+            <div className="flex justify-between items-center mb-8 sticky top-0 bg-white z-20 pb-4 border-b border-slate-100">
+                <div className="flex gap-4 items-center">
+                    <div className="flex bg-slate-100 p-1 rounded-lg">
+                        <button 
+                            onClick={() => setViewLayout('tree')}
+                            className={`p-1.5 rounded-md transition-colors ${viewLayout === 'tree' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                            title={t.org.structure.viewTree}
+                        >
+                            <GitBranch size={18} />
+                        </button>
+                        <button 
+                            onClick={() => setViewLayout('tile')}
+                            className={`p-1.5 rounded-md transition-colors ${viewLayout === 'tile' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                            title={t.org.structure.viewTile}
+                        >
+                            <LayoutGrid size={18} />
+                        </button>
+                    </div>
+                    
+                    <div className="h-6 w-px bg-slate-200"></div>
+
+                    <select 
+                        value={structureType}
+                        onChange={(e) => setStructureType(e.target.value as any)}
+                        className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 bg-white hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                    >
+                        <option value="admin">{t.org.structure.typeAdmin}</option>
+                        <option value="project">{t.org.structure.typeProject}</option>
+                        {/* <option value="matrix">{t.org.structure.typeMatrix}</option> */}
+                    </select>
+
+                    <button 
+                        onClick={() => setShowLegal(!showLegal)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
+                            showLegal ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                    >
+                        <Building size={16} />
+                        {t.org.structure.showLegal}
+                    </button>
+                </div>
+
+                <div className="flex gap-2">
+                     <button className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">
+                         <Move size={16} /> {t.org.structure.batch}
+                     </button>
+                     <button className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">
+                         <Camera size={16} /> {t.org.structure.snapshot}
+                     </button>
+                </div>
             </div>
             
-            <div className="flex flex-col items-center pt-8 overflow-x-auto">
-                {MOCK_ORG_TREE.map(node => <OrgNode key={node.id} node={node} />)}
+            {/* View Area */}
+            <div className="flex-1 overflow-auto">
+                {viewLayout === 'tree' ? (
+                    <div className="flex flex-col items-center pt-4 min-w-max">
+                        {data.map(node => <OrgNode key={node.id} node={node} showLegal={showLegal} />)}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-in fade-in zoom-in-95 duration-200">
+                        {flatNodes.map(node => <TileNode key={node.id} node={node} showLegal={showLegal} />)}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -227,133 +364,98 @@ const WorkflowsView = () => {
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
              <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-                 <h3 className="font-semibold text-slate-800">Process Center</h3>
-                 <button className="text-xs text-indigo-600 font-medium">View All History</button>
+                 <h3 className="font-bold text-slate-800">HR Process Workflows</h3>
+                 <button className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">
+                     <Plus size={16}/> New Workflow
+                 </button>
              </div>
              <table className="w-full text-sm text-left">
-                <thead className="text-slate-500 font-medium border-b border-slate-100 bg-white">
-                    <tr>
-                        <th className="px-6 py-4">Process Type</th>
-                        <th className="px-6 py-4">Employee</th>
-                        <th className="px-6 py-4">Request Date</th>
-                        <th className="px-6 py-4">Current Step</th>
-                        <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 text-right">Action</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                    {MOCK_HR_PROCESSES.map(proc => (
-                        <tr key={proc.id} className="hover:bg-slate-50">
+                 <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+                     <tr>
+                         <th className="px-6 py-4">Process Name</th>
+                         <th className="px-6 py-4">Owner</th>
+                         <th className="px-6 py-4">Steps</th>
+                         <th className="px-6 py-4">Last Updated</th>
+                         <th className="px-6 py-4">Status</th>
+                         <th className="px-6 py-4">Actions</th>
+                     </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-100">
+                     {MOCK_HR_PROCESSES.map(proc => (
+                         <tr key={proc.id} className="hover:bg-slate-50">
+                             <td className="px-6 py-4 font-bold text-slate-700">{proc.name}</td>
+                             <td className="px-6 py-4 text-slate-600">{proc.owner}</td>
+                             <td className="px-6 py-4 text-slate-600">{proc.steps}</td>
+                             <td className="px-6 py-4 text-slate-500">{proc.lastUpdated}</td>
                              <td className="px-6 py-4">
-                                 <div className="flex items-center gap-2">
-                                     <div className={`p-1.5 rounded-md ${
-                                         proc.type === 'Onboarding' ? 'bg-blue-100 text-blue-600' : 
-                                         proc.type === 'Promotion' ? 'bg-purple-100 text-purple-600' :
-                                         proc.type === 'Resignation' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'
-                                     }`}>
-                                         <GitPullRequest size={14} />
-                                     </div>
-                                     <span className="font-medium text-slate-700">{proc.type}</span>
-                                 </div>
-                             </td>
-                             <td className="px-6 py-4">
-                                 <div>
-                                     <p className="font-medium text-slate-800">{proc.employeeName}</p>
-                                     <p className="text-xs text-slate-500">{proc.department}</p>
-                                 </div>
-                             </td>
-                             <td className="px-6 py-4 text-slate-500">{proc.requestDate}</td>
-                             <td className="px-6 py-4 text-slate-600">
-                                 <div className="flex items-center gap-2">
-                                     <Clock size={14} className="text-slate-400"/>
-                                     {proc.currentStep}
-                                 </div>
-                             </td>
-                             <td className="px-6 py-4">
-                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                     proc.status === 'Approved' ? 'bg-green-100 text-green-700' :
-                                     proc.status === 'Pending' ? 'bg-amber-100 text-amber-700' :
-                                     proc.status === 'Processing' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
+                                 <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                     proc.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
                                  }`}>
                                      {proc.status}
                                  </span>
                              </td>
-                             <td className="px-6 py-4 text-right">
-                                 <button className="text-indigo-600 hover:text-indigo-700 font-medium text-xs">Details</button>
+                             <td className="px-6 py-4">
+                                 <button className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
                              </td>
-                        </tr>
-                    ))}
-                </tbody>
+                         </tr>
+                     ))}
+                 </tbody>
              </table>
         </div>
     );
 };
 
 const ContractsView = () => {
+    const { t } = useLanguage();
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                 <div className="bg-indigo-600 rounded-xl p-6 text-white shadow-lg">
-                     <h3 className="font-medium opacity-90 mb-2">Total Active Contracts</h3>
-                     <p className="text-3xl font-bold">1,248</p>
-                     <div className="mt-4 flex gap-2 text-xs opacity-75">
-                         <span className="bg-white/20 px-2 py-1 rounded">Perm: 1,100</span>
-                         <span className="bg-white/20 px-2 py-1 rounded">Fixed: 148</span>
-                     </div>
-                 </div>
-                 <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex items-center justify-between">
-                     <div>
-                         <h3 className="text-slate-500 font-medium mb-1">Expiring Soon (30 days)</h3>
-                         <p className="text-3xl font-bold text-amber-500">12</p>
-                         <button className="text-xs text-indigo-600 font-medium mt-2">View List</button>
-                     </div>
-                     <AlertCircle size={40} className="text-amber-100" />
-                 </div>
-                 <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex items-center justify-between">
-                     <div>
-                         <h3 className="text-slate-500 font-medium mb-1">Pending Signatures</h3>
-                         <p className="text-3xl font-bold text-blue-500">5</p>
-                         <button className="text-xs text-indigo-600 font-medium mt-2">Remind All</button>
-                     </div>
-                     <PenTool size={40} className="text-blue-100" />
-                 </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {[
+                    { label: t.org.contracts.totalActive, value: 120, color: 'text-blue-600', bg: 'bg-blue-50' },
+                    { label: t.org.contracts.perm, value: 95, color: 'text-green-600', bg: 'bg-green-50' },
+                    { label: t.org.contracts.fixed, value: 20, color: 'text-orange-600', bg: 'bg-orange-50' },
+                    { label: t.org.contracts.expiring, value: 5, color: 'text-red-600', bg: 'bg-red-50' },
+                ].map((stat, i) => (
+                    <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                         <div className={`p-3 rounded-lg ${stat.bg} ${stat.color} font-bold`}>{stat.value}</div>
+                         <div className="text-sm font-medium text-slate-600">{stat.label}</div>
+                    </div>
+                ))}
             </div>
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-slate-200 flex justify-between items-center">
+                    <h3 className="font-bold text-slate-800">Contract List</h3>
+                    <div className="flex gap-2">
+                        <button className="px-3 py-1.5 border border-slate-200 rounded text-sm hover:bg-slate-50">{t.org.contracts.remindAll}</button>
+                    </div>
+                </div>
                 <table className="w-full text-sm text-left">
                     <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
                         <tr>
-                            <th className="px-6 py-4">Employee</th>
-                            <th className="px-6 py-4">Type</th>
-                            <th className="px-6 py-4">Duration</th>
-                            <th className="px-6 py-4">End Date</th>
-                            <th className="px-6 py-4">E-Signature</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4 text-right">Actions</th>
+                            <th className="px-6 py-4">{t.org.contracts.table.employee}</th>
+                            <th className="px-6 py-4">{t.org.contracts.table.type}</th>
+                            <th className="px-6 py-4">{t.org.contracts.table.endDate}</th>
+                            <th className="px-6 py-4">{t.org.contracts.table.status}</th>
+                            <th className="px-6 py-4 text-right">{t.org.contracts.table.actions}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {MOCK_CONTRACTS.map(ct => (
-                            <tr key={ct.id} className="hover:bg-slate-50">
-                                <td className="px-6 py-4 font-semibold text-slate-700">{ct.employeeName}</td>
-                                <td className="px-6 py-4 text-slate-600">{ct.contractType}</td>
-                                <td className="px-6 py-4 text-slate-500 text-xs">{ct.startDate} ~ {ct.endDate}</td>
-                                <td className="px-6 py-4 font-medium text-slate-700">{ct.endDate}</td>
+                        {MOCK_CONTRACTS.map(contract => (
+                            <tr key={contract.id} className="hover:bg-slate-50">
+                                <td className="px-6 py-4 font-bold text-slate-700">{contract.employeeName}</td>
+                                <td className="px-6 py-4 text-slate-600">{contract.type}</td>
+                                <td className="px-6 py-4 text-slate-600">{contract.endDate || '-'}</td>
                                 <td className="px-6 py-4">
-                                    {ct.digitalSignature ? (
-                                        <span className="flex items-center gap-1 text-green-600 text-xs"><CheckCircle size={14}/> Signed</span>
-                                    ) : (
-                                        <span className="flex items-center gap-1 text-slate-400 text-xs"><Clock size={14}/> Pending</span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                        ct.status === 'Active' ? 'bg-green-100 text-green-700' :
-                                        ct.status === 'Expiring Soon' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
-                                    }`}>{ct.status}</span>
+                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                        contract.status === 'Active' ? 'bg-green-100 text-green-700' :
+                                        contract.status === 'Expiring' ? 'bg-red-100 text-red-700' : 'bg-slate-100'
+                                    }`}>
+                                        {contract.status}
+                                    </span>
                                 </td>
                                 <td className="px-6 py-4 text-right">
-                                    <button className="text-slate-400 hover:text-indigo-600"><MoreHorizontal size={16}/></button>
+                                    <button className="text-slate-400 hover:text-slate-600"><MoreHorizontal size={16}/></button>
                                 </td>
                             </tr>
                         ))}
@@ -367,44 +469,35 @@ const ContractsView = () => {
 const PermissionsView = () => {
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-             <div className="p-6 border-b border-slate-100">
-                 <h2 className="text-lg font-bold text-slate-800">Role-Based Access Control (RBAC)</h2>
-                 <p className="text-slate-500 text-sm">Manage user roles and data access permissions.</p>
+             <div className="p-4 border-b border-slate-200 flex justify-between items-center">
+                 <h3 className="font-bold text-slate-800">Role & Permissions</h3>
+                 <button className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">
+                     <Plus size={16}/> New Role
+                 </button>
              </div>
              <table className="w-full text-sm text-left">
                  <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
                      <tr>
                          <th className="px-6 py-4">Role Name</th>
-                         <th className="px-6 py-4">Description</th>
-                         <th className="px-6 py-4">Users Assigned</th>
-                         <th className="px-6 py-4">Access Level</th>
+                         <th className="px-6 py-4">Assigned Users</th>
+                         <th className="px-6 py-4">Module Access</th>
                          <th className="px-6 py-4 text-right">Actions</th>
                      </tr>
                  </thead>
                  <tbody className="divide-y divide-slate-100">
                      {MOCK_ROLES.map(role => (
                          <tr key={role.id} className="hover:bg-slate-50">
-                             <td className="px-6 py-4 font-bold text-slate-700 flex items-center gap-2">
-                                 <Shield size={16} className="text-indigo-500" />
-                                 {role.roleName}
-                             </td>
-                             <td className="px-6 py-4 text-slate-600">{role.description}</td>
-                             <td className="px-6 py-4 text-slate-600">
-                                 <div className="flex items-center gap-2">
-                                     <Users size={14} className="text-slate-400"/>
-                                     {role.usersCount}
+                             <td className="px-6 py-4 font-bold text-slate-700">{role.role}</td>
+                             <td className="px-6 py-4 text-slate-600">{role.usersCount}</td>
+                             <td className="px-6 py-4">
+                                 <div className="flex gap-2">
+                                     {role.modules.map((m, i) => (
+                                         <span key={i} className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded border border-slate-200">{m}</span>
+                                     ))}
                                  </div>
                              </td>
-                             <td className="px-6 py-4">
-                                 <span className={`px-2 py-1 rounded text-xs border ${
-                                     role.accessLevel === 'Full' ? 'bg-red-50 text-red-700 border-red-200' :
-                                     role.accessLevel === 'Read/Write' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-50 text-slate-700 border-slate-200'
-                                 }`}>
-                                     {role.accessLevel}
-                                 </span>
-                             </td>
                              <td className="px-6 py-4 text-right">
-                                 <button className="text-indigo-600 font-medium hover:underline text-xs">Edit Permissions</button>
+                                 <button className="text-indigo-600 hover:underline">Edit</button>
                              </td>
                          </tr>
                      ))}
@@ -415,136 +508,58 @@ const PermissionsView = () => {
 };
 
 const ProfileModal = ({ employee, onClose }: { employee: Employee, onClose: () => void }) => {
-    const [tab, setTab] = useState<'info' | 'timeline' | 'docs'>('info');
-
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex justify-end">
-            <div className="w-full max-w-lg bg-white h-full shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
-                {/* Header */}
-                <div className="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
-                    <div className="flex gap-4">
-                        <img src={employee.avatar} className="w-16 h-16 rounded-full border-4 border-white shadow-sm" />
-                        <div>
-                            <h2 className="text-xl font-bold text-slate-800">{employee.name}</h2>
-                            <p className="text-indigo-600 font-medium">{employee.role}</p>
-                            <p className="text-sm text-slate-500">{employee.department} • {employee.location}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="relative h-32 bg-gradient-to-r from-indigo-500 to-purple-600">
+                    <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors">
+                        <X size={20} />
+                    </button>
+                </div>
+                <div className="px-8 pb-8">
+                    <div className="relative -mt-16 mb-6 flex justify-between items-end">
+                        <img src={employee.avatar} alt={employee.name} className="w-32 h-32 rounded-xl border-4 border-white shadow-md bg-white" />
+                        <div className="flex gap-3 mb-2">
+                             <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-sm font-medium text-sm">
+                                 <Mail size={16} /> Message
+                             </button>
+                             <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 font-medium text-sm">
+                                 <MoreHorizontal size={16} />
+                             </button>
                         </div>
                     </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X size={24}/></button>
-                </div>
-
-                {/* Tabs */}
-                <div className="flex border-b border-slate-200 px-6">
-                    <button onClick={() => setTab('info')} className={`py-3 px-4 text-sm font-medium border-b-2 ${tab === 'info' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500'}`}>Profile Info</button>
-                    <button onClick={() => setTab('timeline')} className={`py-3 px-4 text-sm font-medium border-b-2 ${tab === 'timeline' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500'}`}>Timeline</button>
-                    <button onClick={() => setTab('docs')} className={`py-3 px-4 text-sm font-medium border-b-2 ${tab === 'docs' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500'}`}>Documents</button>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    {tab === 'info' && (
-                        <div className="space-y-6">
-                             <div className="grid grid-cols-2 gap-4">
-                                 <div>
-                                     <label className="block text-xs text-slate-500 uppercase font-semibold mb-1">Email</label>
-                                     <p className="text-slate-800">{employee.email}</p>
-                                 </div>
-                                 <div>
-                                     <label className="block text-xs text-slate-500 uppercase font-semibold mb-1">Phone</label>
-                                     <p className="text-slate-800">{employee.phone}</p>
-                                 </div>
-                                 <div>
-                                     <label className="block text-xs text-slate-500 uppercase font-semibold mb-1">Employee ID</label>
-                                     <p className="text-slate-800">EMP-{employee.id.padStart(4, '0')}</p>
-                                 </div>
-                                 <div>
-                                     <label className="block text-xs text-slate-500 uppercase font-semibold mb-1">Join Date</label>
-                                     <p className="text-slate-800">{employee.joinDate}</p>
-                                 </div>
-                             </div>
-                             
-                             <div className="pt-6 border-t border-slate-100">
-                                 <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                     <Users size={18} className="text-indigo-500"/> Team & Reporting
-                                 </h3>
-                                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-3">
-                                     <div className="flex items-center gap-3">
-                                         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">MP</div>
-                                         <div>
-                                             <p className="text-sm font-medium text-slate-800">Michael Chen</p>
-                                             <p className="text-xs text-slate-500">Direct Manager</p>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-
-                             {/* AI Profile Section */}
-                             <div className="pt-6 border-t border-slate-100">
-                                 <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-100">
-                                     <h3 className="font-bold text-indigo-900 mb-2 text-sm flex items-center gap-2">
-                                         ✨ AI Talent Hologram
-                                     </h3>
-                                     <p className="text-xs text-indigo-800 leading-relaxed">
-                                         High potential employee with strong leadership traits. Consistently exceeds project deliverables. Recommended for "Senior Lead" track in Q3 2024.
-                                     </p>
-                                 </div>
-                             </div>
-                        </div>
-                    )}
                     
-                    {tab === 'timeline' && (
-                        <div className="relative pl-4 border-l-2 border-slate-200 space-y-8">
-                             <div className="relative">
-                                 <div className="absolute -left-[21px] top-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                                 <p className="text-xs text-slate-500 mb-1">Mar 2024</p>
-                                 <p className="font-bold text-slate-800">Annual Performance Review</p>
-                                 <p className="text-sm text-slate-600">Rated "Exceeds Expectations" (4.5/5)</p>
-                             </div>
-                             <div className="relative">
-                                 <div className="absolute -left-[21px] top-1 w-3 h-3 bg-indigo-500 rounded-full border-2 border-white"></div>
-                                 <p className="text-xs text-slate-500 mb-1">Jan 2023</p>
-                                 <p className="font-bold text-slate-800">Promotion to Senior UX Designer</p>
-                                 <p className="text-sm text-slate-600">Approved by Michael Chen</p>
-                             </div>
-                             <div className="relative">
-                                 <div className="absolute -left-[21px] top-1 w-3 h-3 bg-slate-400 rounded-full border-2 border-white"></div>
-                                 <p className="text-xs text-slate-500 mb-1">{employee.joinDate}</p>
-                                 <p className="font-bold text-slate-800">Joined Astra Inc.</p>
-                                 <p className="text-sm text-slate-600">Onboarding Completed</p>
-                             </div>
-                        </div>
-                    )}
-
-                    {tab === 'docs' && (
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-red-50 text-red-600 rounded"><FileText size={18}/></div>
-                                    <div>
-                                        <p className="text-sm font-medium text-slate-800">Employment Contract.pdf</p>
-                                        <p className="text-xs text-slate-500">Signed on {employee.joinDate}</p>
-                                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800">{employee.name}</h2>
+                        <p className="text-slate-500 font-medium">{employee.role} • {employee.department}</p>
+                        
+                        <div className="grid grid-cols-2 gap-6 mt-8">
+                            <div className="space-y-4">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">Contact Info</h3>
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <Mail size={16} className="text-slate-400" /> {employee.email}
                                 </div>
-                                <Upload size={16} className="text-slate-400"/>
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <Smartphone size={16} className="text-slate-400" /> +1 (555) 000-0000
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <MapPin size={16} className="text-slate-400" /> {employee.location}
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-blue-50 text-blue-600 rounded"><FileText size={18}/></div>
-                                    <div>
-                                        <p className="text-sm font-medium text-slate-800">NDA Agreement.pdf</p>
-                                        <p className="text-xs text-slate-500">Signed on {employee.joinDate}</p>
-                                    </div>
+                            <div className="space-y-4">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">Employment</h3>
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <Calendar size={16} className="text-slate-400" /> Joined {employee.joinDate}
                                 </div>
-                                <Upload size={16} className="text-slate-400"/>
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <Building size={16} className="text-slate-400" /> ID: {employee.id.toUpperCase()}
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <CheckCircle size={16} className="text-green-500" /> {employee.status}
+                                </div>
                             </div>
                         </div>
-                    )}
-                </div>
-                
-                {/* Footer */}
-                <div className="p-4 border-t border-slate-200 bg-slate-50 flex gap-3">
-                    <button className="flex-1 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Edit Profile</button>
-                    <button className="flex-1 py-2 bg-indigo-600 rounded-lg text-sm font-medium text-white hover:bg-indigo-700">Actions</button>
+                    </div>
                 </div>
             </div>
         </div>
