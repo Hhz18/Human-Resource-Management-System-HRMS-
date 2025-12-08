@@ -213,7 +213,7 @@ const SchedulingView = () => {
                         </div>
                         {days.map(d => {
                             const dayKey = d.toString().padStart(2, '0');
-                            const shiftId = row.shifts[dayKey];
+                            const shiftId = row.shifts[dayKey as keyof typeof row.shifts];
                             const shift = SHIFT_DEFINITIONS.find(s => s.id === shiftId);
                             return (
                                 <div key={d} className="p-2 border-l border-slate-100 relative group cursor-pointer">
